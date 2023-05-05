@@ -6,7 +6,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.DefaultAllocator
+import com.sample.player.DIConstants.MAX_BACKWARD_DURATION
 import com.sample.player.DIConstants.MAX_BUFFER_DURATION
+import com.sample.player.DIConstants.MAX_FORWARD_DURATION
 import com.sample.player.DIConstants.MIN_BUFFER_DURATION
 import com.sample.player.DIConstants.MIN_PLAYBACK_RESUME_BUFFER
 import com.sample.player.DIConstants.MIN_PLAYBACK_START_BUFFER
@@ -40,6 +42,8 @@ object AppModule {
             .build()
 
         return ExoPlayer.Builder(context)
+            .setSeekForwardIncrementMs(MAX_FORWARD_DURATION)
+            .setSeekBackIncrementMs(MAX_BACKWARD_DURATION)
             .setLoadControl(loadControl)
             .build()
     }
