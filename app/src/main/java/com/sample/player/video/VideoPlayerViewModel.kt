@@ -31,6 +31,10 @@ class VideoPlayerViewModel @Inject constructor(
     var videoTimer by mutableStateOf(0L)
     var totalDuration by mutableStateOf(0L)
     var bufferedPercentage by mutableStateOf(0)
+    var pauseCount by mutableStateOf(0)
+    var forwardCount by mutableStateOf(0)
+    var backWardCount by mutableStateOf(0)
+
 
     val listener = object : Player.Listener {
 
@@ -103,16 +107,21 @@ class VideoPlayerViewModel @Inject constructor(
     }
 
     fun onForward() {
+        forwardCount += 1
         player.seekForward()
     }
 
     fun onRewind() {
+        backWardCount += 1
         player.seekBack()
     }
 
     fun onPlayPause() {
         isVideoPlaying = isVideoPlaying.not()
         player.playWhenReady = isVideoPlaying
+        if (isVideoPlaying.not()) {
+            pauseCount += 1
+        }
     }
 
     fun onSeekTo(skip: Long) {

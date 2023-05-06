@@ -3,10 +3,12 @@ package com.sample.player
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.media3.common.util.UnstableApi
 import com.sample.player.ui.theme.VideoPlayerAppTheme
 import com.sample.player.video.VideoPlayerScreen
@@ -24,7 +26,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    VideoPlayerScreen()
+                    VideoPlayerScreen(
+                        modifier = Modifier.fillMaxSize()
+                            .background(color = Color.White)
+                    )
                 }
             }
         }
