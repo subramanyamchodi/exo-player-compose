@@ -7,6 +7,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('../keystore/app_keystore.jks')
+            storePassword '123456'
+            keyAlias 'subramanyam'
+            keyPassword '123456'
+        }
+    }
     namespace 'com.sample.player'
     compileSdk 33
 
@@ -25,8 +33,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
