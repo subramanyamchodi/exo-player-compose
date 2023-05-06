@@ -77,7 +77,8 @@ fun PlayerBottomControls(
     totalDuration: () -> Long,
     currentTime: () -> Long,
     bufferPercentage: () -> Int,
-    onSeekChanged: (timeMs: Float) -> Unit
+    onSeekChanged: (timeMs: Float) -> Unit,
+    onSeekChangeFinished: (() -> Unit)? = null
 ) {
 
     val duration = remember(totalDuration()) { totalDuration() }
@@ -104,6 +105,7 @@ fun PlayerBottomControls(
                 modifier = Modifier.fillMaxWidth(),
                 value = videoTime.toFloat(),
                 onValueChange = onSeekChanged,
+                onValueChangeFinished = onSeekChangeFinished,
                 valueRange = if (duration > 0) 0f..duration.toFloat() else 0f..0f,
                 colors = SliderDefaults.colors(
                     thumbColor = Color.White,

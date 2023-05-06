@@ -67,9 +67,8 @@ class VideoPlayerViewModel @Inject constructor(
         }
     }
 
-    fun initListener() {
+    fun initPlayer() {
         initializeVideoPlayer()
-        player.addListener(listener)
     }
 
     fun releasePlayer() {

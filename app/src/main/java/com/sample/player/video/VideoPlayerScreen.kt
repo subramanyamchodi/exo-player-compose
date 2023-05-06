@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
+import com.sample.player.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import noRippleClickable
@@ -37,7 +39,7 @@ fun VideoPlayerScreen(
         VideoPlayerView(
             player = videoPlayerViewModel.player,
             releasePLayer = videoPlayerViewModel::releasePlayer,
-            initListener = videoPlayerViewModel::initListener,
+            initListener = videoPlayerViewModel::initPlayer,
             updatePlayerState = videoPlayerViewModel::updatePlayerState,
             onForwardClick = videoPlayerViewModel::onForward,
             onRewindClick = videoPlayerViewModel::onRewind,
@@ -82,27 +84,23 @@ fun VideoPlayerView(
 
     LifecycleObserver { _, event -> lifeCycleEvent?.invoke(event) }
 
-    var showOptions by remember { mutableStateOf(true) }
+    var showPlayerControls by remember { mutableStateOf(true) }
     var seekBarTracking by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = showOptions, key2 = seekBarTracking) {
+    LaunchedEffect(
+        key1 = showPlayerControls,
+        key2 = seekBarTracking
+    ) {
         launch {
-            if (showOptions) {
+            if (showPlayerControls) {
                 delay(5000)
                 if (!seekBarTracking)
-                    showOptions = false
+                    showPlayerControls = false
             }
         }
-        launch {
-            if (seekBarTracking) {
-                delay(2000)
-                seekBarTracking = false
-            }
-        }
-
     }
 
-    DisposableEffect(key1 = true,) {
+    DisposableEffect(key1 = true) {
         initListener()
         onDispose {
             releasePLayer()
@@ -115,7 +113,7 @@ fun VideoPlayerView(
         verticalArrangement = Arrangement.Top
     ) {
         Box(modifier = Modifier.noRippleClickable {
-            showOptions = true
+            showPlayerControls = true
         }) {
             AndroidView(
                 modifier = Modifier
@@ -133,11 +131,11 @@ fun VideoPlayerView(
             )
             androidx.compose.animation.AnimatedVisibility(
                 modifier = Modifier.matchParentSize(),
-                visible = showOptions,
+                visible = showPlayerControls,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                Box() {
+                Box {
                     PlayerCentreControls(
                         onForwardClick = onForwardClick,
                         onRewindClick = onRewindClick,
@@ -153,6 +151,9 @@ fun VideoPlayerView(
                         onSeekChanged = {
                             seekBarTracking = true
                             onSeekChanged(it.toLong())
+                        },
+                        onSeekChangeFinished = {
+                            seekBarTracking = false
                         }
                     )
                 }
@@ -172,9 +173,18 @@ fun CountFields(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CountTextField(label = "Pause count:", count = pauseCount())
-        CountTextField(label = "Forward count:", count = forwardCount())
-        CountTextField(label = "Backward count:", count = backwardCount())
+        CountTextField(
+            label = stringResource(R.string.pause_count) + ":",
+            count = pauseCount()
+        )
+        CountTextField(
+            label = stringResource(R.string.forward_count) + ":",
+            count = forwardCount()
+        )
+        CountTextField(
+            label = stringResource(R.string.backward_count) + ":",
+            count = backwardCount()
+        )
     }
 }
 
