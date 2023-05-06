@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">VideoPlayerApp</string>
+    <string name="app_name">Video Playback</string>
     <string name="pause_count">Pause count</string>
     <string name="forward_count">Forward count</string>
     <string name="backward_count">Backward count</string>
+    <string name="video_play">Video Play</string>
 </resources>

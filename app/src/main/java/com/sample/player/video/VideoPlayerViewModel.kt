@@ -42,7 +42,7 @@ class VideoPlayerViewModel @Inject constructor(
             super.onEvents(player, events)
             totalDuration = player.duration
             bufferedPercentage = player.bufferedPercentage
-            if (timerJob?.isActive == false) {
+            if (videoTimerJob?.isActive == false) {
                 videoTimer = player.contentPosition
             }
         }
@@ -50,15 +50,15 @@ class VideoPlayerViewModel @Inject constructor(
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
             isVideoPlaying = isPlaying
-            runTimer(isPlaying)
+            runVideoTimer(isPlaying)
         }
     }
 
-    private var timerJob: Job? = null
-    fun runTimer(isPlaying: Boolean) {
-        timerJob?.cancel()
+    private var videoTimerJob: Job? = null
+    fun runVideoTimer(isPlaying: Boolean) {
+        videoTimerJob?.cancel()
         if (isPlaying) {
-            timerJob = viewModelScope.launch {
+            videoTimerJob = viewModelScope.launch {
                 while (true) {
                     delay(1000)
                     videoTimer = player.contentPosition
@@ -123,6 +123,7 @@ class VideoPlayerViewModel @Inject constructor(
     fun onPlayPause() {
         isVideoPlaying = isVideoPlaying.not()
         player.playWhenReady = isVideoPlaying
+        // only logs pause events skips play event
         if (isVideoPlaying.not()) {
             pauseCount += 1
             logAnalyticsCountEvent(

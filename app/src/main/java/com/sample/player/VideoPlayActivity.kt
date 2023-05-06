@@ -25,7 +25,7 @@ class VideoPlayActivity : ComponentActivity() {
                     topBar = {
                         TopAppBar(
                             title = {
-                                Text(text = "Video Play")
+                                Text(text = getString(R.string.video_play))
                             },
                             backgroundColor = MaterialTheme.colors.primary
                         )
