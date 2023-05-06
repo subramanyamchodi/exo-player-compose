@@ -1,9 +1,11 @@
 package com.sample.player.video
 
+import CountTextField
 import LifecycleObserver
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,13 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,7 +50,8 @@ fun VideoPlayerScreen(
             currentTime = { videoPlayerViewModel.videoTimer }
         )
         CountFields(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(32.dp),
             pauseCount = { videoPlayerViewModel.pauseCount },
             forwardCount = { videoPlayerViewModel.forwardCount },
@@ -130,24 +131,31 @@ fun VideoPlayerView(
                     updatePlayerState?.invoke(it)
                 }
             )
-            if (showOptions) {
-                PlayerCentreControls(
-                    onForwardClick = onForwardClick,
-                    onRewindClick = onRewindClick,
-                    onPlayPauseClick = onPlayPauseClick,
-                    isVideoPlaying = isVideoPlaying,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                PlayerBottomControls(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    totalDuration = totalDuration,
-                    currentTime = currentTime,
-                    bufferPercentage = bufferPercentage,
-                    onSeekChanged = {
-                        seekBarTracking = true
-                        onSeekChanged(it.toLong())
-                    }
-                )
+            androidx.compose.animation.AnimatedVisibility(
+                modifier = Modifier.matchParentSize(),
+                visible = showOptions,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box() {
+                    PlayerCentreControls(
+                        onForwardClick = onForwardClick,
+                        onRewindClick = onRewindClick,
+                        onPlayPauseClick = onPlayPauseClick,
+                        isVideoPlaying = isVideoPlaying,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    PlayerBottomControls(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        totalDuration = totalDuration,
+                        currentTime = currentTime,
+                        bufferPercentage = bufferPercentage,
+                        onSeekChanged = {
+                            seekBarTracking = true
+                            onSeekChanged(it.toLong())
+                        }
+                    )
+                }
             }
         }
     }
@@ -164,21 +172,9 @@ fun CountFields(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Pause count: ${pauseCount()}",
-            color = Color.Black,
-            fontSize = 16.sp
-        )
-        Text(
-            text = "Forward count: ${forwardCount()}",
-            color = Color.Black,
-            fontSize = 16.sp
-        )
-        Text(
-            text = "Backward count: ${backwardCount()}",
-            color = Color.Black,
-            fontSize = 16.sp
-        )
+        CountTextField(label = "Pause count:", count = pauseCount())
+        CountTextField(label = "Forward count:", count = forwardCount())
+        CountTextField(label = "Backward count:", count = backwardCount())
     }
 }
 
@@ -192,9 +188,9 @@ private fun ShowVideoScreenPreview() {
             modifier = Modifier.wrapContentHeight()
         )
         CountFields(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(32.dp)
         )
     }
-
 }

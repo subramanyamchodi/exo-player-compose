@@ -1,5 +1,7 @@
 package com.sample.player.video
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -14,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.sample.player.R
 import formatMinSec
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlayerCentreControls(
     modifier: Modifier = Modifier,
@@ -41,16 +44,19 @@ fun PlayerCentreControls(
             }
 
             //pause/play toggle button
-            IconButton(modifier = Modifier, onClick = onPlayPauseClick) {
-                Icon(
-                    painter = painterResource(
-                        id = if (isVideoPlaying()) R.drawable.ic_pause else R.drawable.ic_play
-                    ),
-                    contentDescription = "Replay 5 seconds",
-                    modifier = Modifier.size(36.dp),
-                    tint = Color.White
-                )
+            AnimatedContent(targetState = isVideoPlaying()) {
+                IconButton(modifier = Modifier, onClick = onPlayPauseClick) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (it) R.drawable.ic_pause else R.drawable.ic_play
+                        ),
+                        contentDescription = "Replay 5 seconds",
+                        modifier = Modifier.size(36.dp),
+                        tint = Color.White
+                    )
+                }
             }
+
 
             //forward button
             IconButton(modifier = Modifier, onClick = onForwardClick) {
@@ -110,7 +116,7 @@ fun PlayerBottomControls(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
