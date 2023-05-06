@@ -6,12 +6,15 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.DefaultAllocator
-import com.sample.player.DIConstants.MAX_BACKWARD_DURATION
-import com.sample.player.DIConstants.MAX_BUFFER_DURATION
-import com.sample.player.DIConstants.MAX_FORWARD_DURATION
-import com.sample.player.DIConstants.MIN_BUFFER_DURATION
-import com.sample.player.DIConstants.MIN_PLAYBACK_RESUME_BUFFER
-import com.sample.player.DIConstants.MIN_PLAYBACK_START_BUFFER
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
+import com.sample.player.AppConstants.MAX_BACKWARD_DURATION
+import com.sample.player.AppConstants.MAX_BUFFER_DURATION
+import com.sample.player.AppConstants.MAX_FORWARD_DURATION
+import com.sample.player.AppConstants.MIN_BUFFER_DURATION
+import com.sample.player.AppConstants.MIN_PLAYBACK_RESUME_BUFFER
+import com.sample.player.AppConstants.MIN_PLAYBACK_START_BUFFER
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,4 +50,8 @@ object AppModule {
             .setLoadControl(loadControl)
             .build()
     }
+
+    @Singleton
+    @Provides
+    fun providesAnalytics(): FirebaseAnalytics = Firebase.analytics
 }

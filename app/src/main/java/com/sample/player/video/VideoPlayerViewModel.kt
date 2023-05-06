@@ -1,6 +1,6 @@
 package com.sample.player.video
 
-import android.util.Log
+import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,8 +12,10 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.sample.player.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
-import formatMinSec
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,11 +24,11 @@ import javax.inject.Inject
 @UnstableApi
 @HiltViewModel
 class VideoPlayerViewModel @Inject constructor(
-    val player: Player
+    val player: Player,
+    private val analytics: FirebaseAnalytics
 ) : ViewModel() {
 
     private val videoUrl = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
-    var lifecycleEvent by mutableStateOf(Lifecycle.Event.ON_CREATE)
     var isVideoPlaying by mutableStateOf(false)
     var videoTimer by mutableStateOf(0L)
     var totalDuration by mutableStateOf(0L)
@@ -40,18 +42,16 @@ class VideoPlayerViewModel @Inject constructor(
 
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
-            isVideoPlaying = player.isPlaying
             totalDuration = player.duration
             bufferedPercentage = player.bufferedPercentage
             if (timerJob?.isActive == false) {
                 videoTimer = player.contentPosition
             }
-            Log.v("timer", player.contentPosition.formatMinSec())
-            Log.v("buffer", ""+bufferedPercentage)
         }
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
+            isVideoPlaying = isPlaying
             runTimer(isPlaying)
         }
     }
@@ -87,33 +87,40 @@ class VideoPlayerViewModel @Inject constructor(
         player.prepare()
     }
 
-    fun updatePlayerState(playerView: PlayerView) {
-        playerView.useController = false
-        playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-        when (lifecycleEvent) {
-//            Lifecycle.Event.ON_CREATE -> {
-//                initializeVideoPlayer()
-//            }
+    fun onLifecycleChange(lifecycle: Lifecycle.Event) {
+        when(lifecycle) {
             Lifecycle.Event.ON_PAUSE -> {
-                playerView.onPause()
-                playerView.player?.playWhenReady = false
+                player.playWhenReady = false
             }
             Lifecycle.Event.ON_RESUME -> {
-                playerView.onResume()
-                playerView.player?.playWhenReady = true
+                player.playWhenReady = true
             }
             else -> Unit
         }
     }
 
+    fun updatePlayerState(playerView: PlayerView) {
+        playerView.useController = false
+        playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+        playerView.keepScreenOn = isVideoPlaying
+    }
+
     fun onForward() {
         forwardCount += 1
         player.seekForward()
+        logAnalyticsCountEvent(
+            eventName = AppConstants.ANALYTICS_FORWARD,
+            count = forwardCount
+        )
     }
 
     fun onRewind() {
         backWardCount += 1
         player.seekBack()
+        logAnalyticsCountEvent(
+            eventName = AppConstants.ANALYTICS_BACKWARD,
+            count = backWardCount
+        )
     }
 
     fun onPlayPause() {
@@ -121,11 +128,24 @@ class VideoPlayerViewModel @Inject constructor(
         player.playWhenReady = isVideoPlaying
         if (isVideoPlaying.not()) {
             pauseCount += 1
+            logAnalyticsCountEvent(
+                eventName = AppConstants.ANALYTICS_PAUSE,
+                count = pauseCount
+            )
         }
     }
 
     fun onSeekTo(skip: Long) {
         player.seekTo(skip)
+    }
+
+    private fun logAnalyticsCountEvent(
+        eventName: String,
+        count: Int
+    ) {
+        analytics.logEvent(eventName) {
+            param("count", "$count")
+        }
     }
 
     override fun onCleared() {

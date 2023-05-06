@@ -43,13 +43,11 @@ fun VideoPlayerScreen(
             onRewindClick = videoPlayerViewModel::onRewind,
             onPlayPauseClick = videoPlayerViewModel::onPlayPause,
             onSeekChanged = videoPlayerViewModel::onSeekTo,
+            lifeCycleEvent = videoPlayerViewModel::onLifecycleChange,
             bufferPercentage = { videoPlayerViewModel.bufferedPercentage },
             isVideoPlaying = { videoPlayerViewModel.isVideoPlaying },
             totalDuration = { videoPlayerViewModel.totalDuration },
-            currentTime = { videoPlayerViewModel.videoTimer },
-            lifeCycleEvent = {
-                videoPlayerViewModel.lifecycleEvent = it
-            }
+            currentTime = { videoPlayerViewModel.videoTimer }
         )
         CountFields(
             modifier = Modifier.fillMaxSize()
