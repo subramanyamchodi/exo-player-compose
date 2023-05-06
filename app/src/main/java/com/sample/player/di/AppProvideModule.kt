@@ -25,7 +25,7 @@ import javax.inject.Singleton
 @UnstableApi
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object AppProvideModule {
 
     @Provides
     @Singleton
@@ -54,4 +54,6 @@ object AppModule {
     @Singleton
     @Provides
     fun providesAnalytics(): FirebaseAnalytics = Firebase.analytics
+
+
 }

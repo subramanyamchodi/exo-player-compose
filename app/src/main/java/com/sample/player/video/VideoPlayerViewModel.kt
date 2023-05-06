@@ -1,6 +1,5 @@
 package com.sample.player.video
 
-import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,9 +11,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
 import com.sample.player.AppConstants
+import com.sample.player.analytics.AnalyticsService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -25,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoPlayerViewModel @Inject constructor(
     val player: Player,
-    private val analytics: FirebaseAnalytics
+    private val analyticsService: AnalyticsService
 ) : ViewModel() {
 
     private val videoUrl = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
@@ -38,7 +36,7 @@ class VideoPlayerViewModel @Inject constructor(
     var backWardCount by mutableStateOf(0)
 
 
-    val listener = object : Player.Listener {
+    private val listener = object : Player.Listener {
 
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
@@ -143,9 +141,7 @@ class VideoPlayerViewModel @Inject constructor(
         eventName: String,
         count: Int
     ) {
-        analytics.logEvent(eventName) {
-            param("count", "$count")
-        }
+        analyticsService.logCountEvent(eventName, count)
     }
 
     override fun onCleared() {
