@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import com.sample.player.ui.theme.VideoPlayerAppTheme
 import com.sample.player.video.VideoPlayerScreen
@@ -27,7 +28,8 @@ class VideoPlayActivity : ComponentActivity() {
                             title = {
                                 Text(text = getString(R.string.video_play))
                             },
-                            backgroundColor = MaterialTheme.colors.primary
+                            backgroundColor = MaterialTheme.colors.primary,
+                            elevation = 0.dp
                         )
                     }
                 ) {
