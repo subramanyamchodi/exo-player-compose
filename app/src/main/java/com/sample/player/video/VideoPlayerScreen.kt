@@ -2,8 +2,13 @@ package com.sample.player.video
 
 import CountTextField
 import LifecycleObserver
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
@@ -63,6 +68,7 @@ fun VideoPlayerScreen(
 
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun VideoPlayerView(
     modifier: Modifier = Modifier,
@@ -113,7 +119,7 @@ fun VideoPlayerView(
         verticalArrangement = Arrangement.Top
     ) {
         Box(modifier = Modifier.noRippleClickable {
-            showPlayerControls = true
+            showPlayerControls = !showPlayerControls
         }) {
             AndroidView(
                 modifier = Modifier
@@ -129,35 +135,64 @@ fun VideoPlayerView(
                     updatePlayerState?.invoke(it)
                 }
             )
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedContent(
                 modifier = Modifier.matchParentSize(),
-                visible = showPlayerControls,
-                enter = fadeIn(),
-                exit = fadeOut()
+                targetState = showPlayerControls,
             ) {
-                Box {
-                    PlayerCentreControls(
-                        onForwardClick = onForwardClick,
-                        onRewindClick = onRewindClick,
-                        onPlayPauseClick = onPlayPauseClick,
-                        isVideoPlaying = isVideoPlaying,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                    PlayerBottomControls(
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        totalDuration = totalDuration,
-                        currentTime = currentTime,
-                        bufferPercentage = bufferPercentage,
-                        onSeekChanged = {
-                            seekBarTracking = true
-                            onSeekChanged(it.toLong())
-                        },
-                        onSeekChangeFinished = {
-                            seekBarTracking = false
-                        }
-                    )
+                if (it) {
+                    Box {
+                        PlayerCentreControls(
+                            onForwardClick = onForwardClick,
+                            onRewindClick = onRewindClick,
+                            onPlayPauseClick = onPlayPauseClick,
+                            isVideoPlaying = isVideoPlaying,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                        PlayerBottomControls(
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                            totalDuration = totalDuration,
+                            currentTime = currentTime,
+                            bufferPercentage = bufferPercentage,
+                            onSeekChanged = {
+                                seekBarTracking = true
+                                onSeekChanged(it.toLong())
+                            },
+                            onSeekChangeFinished = {
+                                seekBarTracking = false
+                            }
+                        )
+                    }
                 }
             }
+//            androidx.compose.animation.AnimatedVisibility(
+//                modifier = Modifier.matchParentSize(),
+//                visible = showPlayerControls,
+//                enter = fadeIn(),
+//                exit = fadeOut()
+//            ) {
+//                Box {
+//                    PlayerCentreControls(
+//                        onForwardClick = onForwardClick,
+//                        onRewindClick = onRewindClick,
+//                        onPlayPauseClick = onPlayPauseClick,
+//                        isVideoPlaying = isVideoPlaying,
+//                        modifier = Modifier.align(Alignment.Center)
+//                    )
+//                    PlayerBottomControls(
+//                        modifier = Modifier.align(Alignment.BottomCenter),
+//                        totalDuration = totalDuration,
+//                        currentTime = currentTime,
+//                        bufferPercentage = bufferPercentage,
+//                        onSeekChanged = {
+//                            seekBarTracking = true
+//                            onSeekChanged(it.toLong())
+//                        },
+//                        onSeekChangeFinished = {
+//                            seekBarTracking = false
+//                        }
+//                    )
+//                }
+//            }
         }
     }
 }
